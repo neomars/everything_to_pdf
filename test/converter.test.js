@@ -35,7 +35,9 @@ assert.strictEqual(path.basename(resolveOutputPath(path.join(dir, 'y.docx'), dir
   fs.writeFileSync(path.join(src, 'déjà.pdf'), '%PDF-1.4');
   fs.writeFileSync(path.join(src, 'cassé.docx'), 'ceci n\'est pas un docx');
   fs.writeFileSync(path.join(src, 'lisez-moi.txt'), 'hello');
-  fs.writeFileSync(path.join(src, 'rapport.odt'), fs.readFileSync(process.env.SAMPLE_ODT));
+  // Un vrai .odt est optionnel : SAMPLE_ODT pointe vers un fichier à ajouter au lot.
+  const odt = process.env.SAMPLE_ODT;
+  if (odt) fs.writeFileSync(path.join(src, 'rapport.odt'), fs.readFileSync(odt));
 
   const events = new Map();
   const q = new ConversionQueue({
@@ -45,18 +47,18 @@ assert.strictEqual(path.basename(resolveOutputPath(path.join(dir, 'y.docx'), dir
   });
   let done;
   const finished = new Promise((r) => { done = r; });
-  assert.strictEqual(q.add([src]), 6);
+  assert.strictEqual(q.add([src]), odt ? 6 : 5);
   await finished;
   q.dispose();
 
   const st = (n) => events.get(n).status;
   assert.strictEqual(st('note é accentuée.rtf'), 'done');
-  assert.strictEqual(st('rapport.odt'), 'done');
+  if (odt) assert.strictEqual(st('rapport.odt'), 'done');
   assert.strictEqual(st('tab.csv'), 'done');
   assert.strictEqual(st('lisez-moi.txt'), 'done');
   assert.strictEqual(st('déjà.pdf'), 'skipped');
   console.log('cassé.docx ->', events.get('cassé.docx').status, events.get('cassé.docx').message);
-  for (const n of ['note é accentuée.rtf', 'rapport.odt']) {
+  for (const n of ['note é accentuée.rtf', ...(odt ? ['rapport.odt'] : [])]) {
     const out = events.get(n).output;
     assert.strictEqual(path.dirname(out), src, 'PDF à côté de la source');
     assert.ok(fs.readFileSync(out).subarray(0, 5).toString() === '%PDF-', 'vrai PDF');

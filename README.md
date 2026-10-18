@@ -36,7 +36,7 @@ En local :
 ```bash
 npm install
 npm start            # lancer l'application
-npm test             # test de la file de conversion (nécessite LibreOffice)
+npm test             # file de conversion (nécessite LibreOffice) + lanceur Linux
 npm run dist:linux   # AppImage + deb  -> dist/
 npm run dist:win     # sur une machine Windows -> dist/*.exe
 ```
@@ -44,8 +44,23 @@ npm run dist:win     # sur une machine Windows -> dist/*.exe
 Les exécutables ne sont pas signés : Windows SmartScreen affichera un avertissement
 (« Informations complémentaires » → « Exécuter quand même »).
 
+## Dépannage Linux
+
+**`The SUID sandbox helper binary was found, but is not configured correctly`** au lancement :
+Chromium n'a aucune sandbox utilisable. Cela touche Ubuntu 24.04 et dérivés, où AppArmor restreint
+les espaces de noms utilisateur.
+
+- **`.deb`** : le paquet installe `chrome-sandbox` en setuid root à l'installation et garde la sandbox.
+  Réinstallez la dernière version (`sudo apt install ./EverythingToPDF-*.deb`) ou, sur une
+  installation plus ancienne : `sudo chmod 4755 "/opt/Everything to PDF/chrome-sandbox"`.
+- **AppImage** : un AppImage ne peut pas porter de bit setuid. Un lanceur intégré
+  (`build/linux-launcher.sh`) garde la sandbox quand elle est utilisable et ne démarre sans qu'en
+  dernier recours. `--no-sandbox` en argument force ce choix.
+
 ## Structure
 
+- `build/` : icône, lanceur Linux (`linux-launcher.sh`, installé par `afterPack.js`),
+  script de post-installation du `.deb` (`linux-after-install.sh`)
 - `src/main.js` : fenêtre, IPC, instance unique, fichiers passés en argument
 - `src/queue.js` : file séquentielle, expansion des dossiers, nommage de sortie
 - `src/libreoffice.js` : détection et pilotage de LibreOffice

@@ -57,6 +57,31 @@ jobs:
             dist/*.AppImage
             dist/*.deb
           if-no-files-found: error
+      # Les paquets sont lancés pour de vrai, sans option, comme le fait un utilisateur. Le runner
+      # Ubuntu 24.04 restreint les espaces de noms utilisateur (AppArmor) et reproduit donc l'erreur
+      # « The SUID sandbox helper binary was found, but is not configured correctly ».
+      - name: Lancer le .deb installé et l'AppImage (sans --no-sandbox)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb libasound2t64 libgbm1 ./dist/*.deb
+          echo "apparmor_restrict_unprivileged_userns=$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null || echo n/a)"
+          if unshare --user --map-root-user --pid --fork true; then echo "espaces de noms utilisateur : utilisables"; else echo "espaces de noms utilisateur : refusés"; fi
+          test "$(stat -c '%a %U' '/opt/Everything to PDF/chrome-sandbox')" = "4755 root"
+
+          smoke() {
+            name=$1; shift
+            dir="$RUNNER_TEMP/smoke-$name"; mkdir -p "$dir/home"
+            printf 'Bonjour\n' > "$dir/a.txt"
+            HOME="$dir/home" xvfb-run -a "$@" "$dir/a.txt" > "$dir/run.log" 2>&1 &
+            for _ in $(seq 60); do [ -s "$dir/a.pdf" ] && break; sleep 1; done
+            tail -n 15 "$dir/run.log"
+            [ -s "$dir/a.pdf" ] || { echo "::error::$name : aucun PDF produit"; return 1; }
+            echo "$name : OK"
+          }
+          smoke deb everything-to-pdf
+          chmod +x dist/*.AppImage
+          export APPIMAGE_EXTRACT_AND_RUN=1   # pas de FUSE sur les runners
+          smoke appimage "$PWD"/dist/*.AppImage
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
