@@ -3,10 +3,12 @@
 # `unshare --user` réussit en root. Sur Ubuntu 24.04 et dérivés (AppArmor), les espaces de noms
 # utilisateur sont pourtant refusés aux applications normales : Chromium n'avait alors plus aucune
 # sandbox et abandonnait au démarrage. La sandbox SUID fonctionne partout.
-# Les noms ci-dessous sont en dur : à garder alignés avec le nom du produit et de l'exécutable
-# (l'étape « Lancer le .deb installé » de la CI échoue en cas d'écart).
+# Le dossier d'installation ne doit PAS contenir d'espace : Chromium découpe le chemin du helper setuid
+# aux espaces (« LaunchProcess: failed to execvp: /opt/Everything ») et plante. Il découle de
+# productName, fixé à « EverythingToPDF » pour Linux par le script dist:linux (package.json).
+# Les noms ci-dessous sont en dur : l'étape « Lancer le .deb installé » de la CI échoue en cas d'écart.
 
-APP_DIR='/opt/Everything to PDF'
+APP_DIR='/opt/EverythingToPDF'
 EXE='everything-to-pdf'
 
 if type update-alternatives 2>/dev/null >&1; then

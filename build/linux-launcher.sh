@@ -18,10 +18,16 @@ for arg in "$@"; do
   if [ "$arg" = "--no-sandbox" ]; then exec "$BIN" "$@"; fi
 done
 
-# 1) Helper setuid root valide.
-if [ -u "$HELPER" ] && [ "$(stat -c %u "$HELPER" 2>/dev/null)" = 0 ]; then
-  exec "$BIN" "$@"
-fi
+# 1) Helper setuid root valide. Chromium coupe le chemin du helper aux espaces
+#    (« LaunchProcess: failed to execvp: /opt/Everything ») : avec un espace, il est inutilisable.
+case "$HELPER" in
+  *[[:space:]]*) ;;
+  *)
+    if [ -u "$HELPER" ] && [ "$(stat -c %u "$HELPER" 2>/dev/null)" = 0 ]; then
+      exec "$BIN" "$@"
+    fi
+    ;;
+esac
 
 # 2) Espaces de noms utilisateur réellement utilisables. La création d'un espace PID est ce que
 #    demande Chromium ; AppArmor la refuse alors que la simple création de l'espace utilisateur passe.

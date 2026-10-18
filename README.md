@@ -50,9 +50,13 @@ Les exécutables ne sont pas signés : Windows SmartScreen affichera un avertiss
 Chromium n'a aucune sandbox utilisable. Cela touche Ubuntu 24.04 et dérivés, où AppArmor restreint
 les espaces de noms utilisateur.
 
-- **`.deb`** : le paquet installe `chrome-sandbox` en setuid root à l'installation et garde la sandbox.
-  Réinstallez la dernière version (`sudo apt install ./EverythingToPDF-*.deb`) ou, sur une
-  installation plus ancienne : `sudo chmod 4755 "/opt/Everything to PDF/chrome-sandbox"`.
+- **`.deb`** : le paquet s'installe dans `/opt/EverythingToPDF` et règle `chrome-sandbox` en setuid
+  root, ce qui garde la sandbox. Le dossier ne contient volontairement aucun espace : Chromium
+  découpe le chemin du helper setuid aux espaces et plante sinon (`LaunchProcess: failed to
+  execvp: /opt/Everything`). Réinstallez la dernière version :
+  `sudo apt install ./EverythingToPDF-*.deb`.
+  Une ancienne version, installée dans `/opt/Everything to PDF`, ne peut pas être réparée par un
+  `chmod` : lancez-la avec `everything-to-pdf --no-sandbox` en attendant de la mettre à jour.
 - **AppImage** : un AppImage ne peut pas porter de bit setuid. Un lanceur intégré
   (`build/linux-launcher.sh`) garde la sandbox quand elle est utilisable et ne démarre sans qu'en
   dernier recours. `--no-sandbox` en argument force ce choix.

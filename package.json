@@ -9,7 +9,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node test/converter.test.js && sh test/launcher.test.sh",
-    "dist:linux": "electron-builder --linux --publish never",
+    "dist:linux": "electron-builder --linux --publish never -c.productName=EverythingToPDF",
     "dist:win": "electron-builder --win --publish never"
   },
   "devDependencies": {
@@ -52,7 +52,11 @@
       ],
       "category": "Office",
       "artifactName": "EverythingToPDF-${version}-${arch}.${ext}",
-      "maintainer": "neomars"
+      "maintainer": "neomars",
+      "desktop": {
+        "Name": "Everything to PDF",
+        "StartupWMClass": "Everything to PDF"
+      }
     },
     "portable": {
       "artifactName": "EverythingToPDF-Portable-${version}.${ext}"

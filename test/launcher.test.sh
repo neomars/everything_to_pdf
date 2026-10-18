@@ -42,6 +42,17 @@ if [ "$(id -u)" = 0 ]; then
   chmod 0755 "$T/chrome-sandbox"
   check "helper sans bit setuid -> --no-sandbox" \
     "$(printf -- '--no-sandbox\na.txt')" "$(run "$T/app" a.txt)"
+
+  # Chromium coupe le chemin du helper aux espaces : un helper setuid valide y est inutilisable.
+  S="$T/dossier avec espaces"
+  mkdir "$S" && cp "$T/app" "$T/app.bin" "$S/" && : > "$S/chrome-sandbox"
+  chown root:root "$S/chrome-sandbox" && chmod 4755 "$S/chrome-sandbox"
+  fake_unshare 1
+  check "helper setuid valide mais chemin avec espaces, pas d'espaces de noms -> --no-sandbox" \
+    "$(printf -- '--no-sandbox\na.txt')" "$(run "$S/app" a.txt)"
+  fake_unshare 0
+  check "helper setuid valide mais chemin avec espaces, espaces de noms utilisables -> sandbox gardée" \
+    "a.txt" "$(run "$S/app" a.txt)"
 else
   echo "SKIP cas du helper setuid (nécessite root pour chown)"
 fi
