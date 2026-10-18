@@ -1,0 +1,58 @@
+{
+  "name": "everything-to-pdf",
+  "productName": "Everything to PDF",
+  "version": "1.0.0",
+  "description": "Convertit par lot des documents (doc, docx, odt, txt, ...) en PDF par glisser-déposer.",
+  "author": "neomars",
+  "license": "MIT",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/converter.test.js",
+    "dist:linux": "electron-builder --linux",
+    "dist:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.neomars.everythingtopdf",
+    "productName": "Everything to PDF",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "EverythingToPDF-${version}-${arch}-${target}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "artifactName": "EverythingToPDF-${version}-${arch}.${ext}",
+      "maintainer": "neomars"
+    }
+  }
+}

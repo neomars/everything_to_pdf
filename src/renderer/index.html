@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+  <title>Everything to PDF</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Everything to PDF</h1>
+    <p>Glissez vos fichiers ou dossiers ici : les PDF sont créés automatiquement à côté des originaux.</p>
+  </header>
+
+  <div id="banner" hidden>
+    LibreOffice n'est pas installé : seuls les fichiers texte, HTML et images peuvent être convertis.
+    <a href="#" id="get-lo">Télécharger LibreOffice</a>
+  </div>
+
+  <main id="drop" tabindex="0">
+    <div class="drop-inner">
+      <div class="icon">⬇</div>
+      <strong>Déposez vos fichiers ici</strong>
+      <span>Word, Excel, PowerPoint, OpenDocument, RTF, txt, html, images…</span>
+      <div class="buttons">
+        <button id="pick-files" type="button">Ajouter des fichiers…</button>
+        <button id="pick-folder" type="button" class="secondary">Ajouter un dossier…</button>
+      </div>
+    </div>
+  </main>
+
+  <section id="results" hidden>
+    <div class="bar"><span id="summary"></span><button id="clear" type="button" class="link">Vider la liste</button></div>
+    <ul id="list"></ul>
+  </section>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
