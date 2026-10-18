@@ -22,6 +22,8 @@ jobs:
           echo "SAMPLE_ODT=$RUNNER_TEMP/rapport.odt" >> "$GITHUB_ENV"
       - run: npm test
       - run: xvfb-run -a node test/e2e-electron.js
+      - name: Glisser-déposer de fichiers et de dossiers (événements natifs)
+        run: xvfb-run -a node test/e2e-dnd.js
 
   windows:
     needs: test
@@ -79,6 +81,9 @@ jobs:
             echo "$name : OK"
           }
           smoke deb everything-to-pdf
+          # Un lanceur resté sur l'ancien dossier (1.0.0, avec espaces) doit continuer de fonctionner
+          test -L '/opt/Everything to PDF'
+          smoke legacy '/opt/Everything to PDF/everything-to-pdf'
           chmod +x dist/*.AppImage
           export APPIMAGE_EXTRACT_AND_RUN=1   # pas de FUSE sur les runners
           smoke appimage "$PWD"/dist/*.AppImage

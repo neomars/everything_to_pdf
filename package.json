@@ -1,7 +1,7 @@
 {
   "name": "everything-to-pdf",
   "productName": "Everything to PDF",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Convertit par lot des documents (doc, docx, odt, txt, ...) en PDF par glisser-déposer.",
   "author": "neomars",
   "license": "MIT",
@@ -62,7 +62,8 @@
       "artifactName": "EverythingToPDF-Portable-${version}.${ext}"
     },
     "deb": {
-      "afterInstall": "build/linux-after-install.sh"
+      "afterInstall": "build/linux-after-install.sh",
+      "afterRemove": "build/linux-after-remove.sh"
     },
     "afterPack": "build/afterPack.js"
   }

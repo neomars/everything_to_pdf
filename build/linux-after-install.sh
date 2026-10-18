@@ -21,6 +21,14 @@ else
     ln -sf "$APP_DIR/$EXE" "/usr/bin/$EXE"
 fi
 
+# Compatibilité : jusqu'à la 1.0.0 l'application s'installait dans « /opt/Everything to PDF » (avec
+# espaces, ce qui casse la sandbox setuid de Chromium). Un lanceur resté sur l'ancien chemin (menu,
+# favoris, raccourci) continue de fonctionner grâce à ce lien, retiré à la désinstallation
+# (linux-after-remove.sh).
+if [ ! -e '/opt/Everything to PDF' ] && [ ! -L '/opt/Everything to PDF' ]; then
+    ln -s EverythingToPDF '/opt/Everything to PDF' || true
+fi
+
 chown root:root "$APP_DIR/chrome-sandbox" || true
 chmod 4755 "$APP_DIR/chrome-sandbox" || true
 

@@ -74,13 +74,8 @@ const drop = $('drop');
   e.preventDefault();
   drop.classList.remove('over');
 }));
-drop.addEventListener('drop', (e) => window.api.addDropped(e.dataTransfer.files));
-// Un dépôt à côté de la zone ne doit pas faire naviguer la fenêtre
-document.addEventListener('dragover', (e) => e.preventDefault());
-document.addEventListener('drop', (e) => {
-  e.preventDefault();
-  if (!drop.contains(e.target)) window.api.addDropped(e.dataTransfer.files);
-});
+// Les fichiers déposés sont récupérés dans preload.js (un FileList ne traverse pas contextBridge) ;
+// la page ne gère que la mise en évidence de la zone.
 
 $('pick-files').onclick = () => window.api.pickFiles();
 $('pick-folder').onclick = () => window.api.pickFolder();

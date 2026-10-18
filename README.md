@@ -37,6 +37,8 @@ En local :
 npm install
 npm start            # lancer l'application
 npm test             # file de conversion (nécessite LibreOffice) + lanceur Linux
+xvfb-run -a node test/e2e-electron.js   # l'application réelle, fichiers passés en argument
+xvfb-run -a node test/e2e-dnd.js        # glisser-déposer natif de fichiers et d'un dossier
 npm run dist:linux   # AppImage + deb  -> dist/
 npm run dist:win     # sur une machine Windows -> dist/*.exe
 ```
@@ -61,10 +63,17 @@ les espaces de noms utilisateur.
   (`build/linux-launcher.sh`) garde la sandbox quand elle est utilisable et ne démarre sans qu'en
   dernier recours. `--no-sandbox` en argument force ce choix.
 
+**Depuis le menu : « Impossible de lancer … Programme `/opt/Everything to PDF/everything-to-pdf`
+non trouvé »** alors que la commande `everything-to-pdf` fonctionne : une entrée de menu pointe
+encore vers l'ancien dossier d'installation (version 1.0.0). Le `.deb` 1.0.2 et suivants crée un lien
+`/opt/Everything to PDF` vers le nouveau dossier, qui fait marcher ces entrées. Sinon, déconnectez-vous
+puis reconnectez-vous, ou cherchez l'entrée périmée :
+`grep -rl "Everything to PDF/" ~/.local/share/applications /usr/share/applications`.
+
 ## Structure
 
 - `build/` : icône, lanceur Linux (`linux-launcher.sh`, installé par `afterPack.js`),
-  script de post-installation du `.deb` (`linux-after-install.sh`)
+  scripts de post-installation et de désinstallation du `.deb` (`linux-after-install.sh`, `linux-after-remove.sh`)
 - `src/main.js` : fenêtre, IPC, instance unique, fichiers passés en argument
 - `src/queue.js` : file séquentielle, expansion des dossiers, nommage de sortie
 - `src/libreoffice.js` : détection et pilotage de LibreOffice
