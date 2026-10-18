@@ -37,13 +37,13 @@
             "x64"
           ]
         }
-      ],
-      "artifactName": "EverythingToPDF-${version}-${arch}-${target}.${ext}"
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
+      "perMachine": false,
+      "artifactName": "EverythingToPDF-Setup-${version}.${ext}"
     },
     "linux": {
       "target": [
@@ -53,6 +53,9 @@
       "category": "Office",
       "artifactName": "EverythingToPDF-${version}-${arch}.${ext}",
       "maintainer": "neomars"
+    },
+    "portable": {
+      "artifactName": "EverythingToPDF-Portable-${version}.${ext}"
     }
   }
 }

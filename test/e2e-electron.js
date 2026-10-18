@@ -1,6 +1,6 @@
 'use strict';
 // Lance la vraie application (Electron) avec des fichiers en argument et vérifie les PDF produits.
-// Usage : xvfb-run -a node test/e2e-electron.js   (ajoute --no-sandbox automatiquement en root)
+// Usage : xvfb-run -a node test/e2e-electron.js   (passe --no-sandbox : sandbox SUID indisponible en CI)
 
 const assert = require('assert');
 const { spawn } = require('child_process');
@@ -19,7 +19,8 @@ if (process.env.SAMPLE_ODT) fs.copyFileSync(process.env.SAMPLE_ODT, path.join(di
 
 const expected = ['texte é.pdf', 'page.pdf', 'image.pdf', 'lettre.pdf', ...(process.env.SAMPLE_ODT ? ['rapport.pdf'] : [])];
 const inputs = fs.readdirSync(dir).map((f) => path.join(dir, f));
-const flags = process.getuid && process.getuid() === 0 ? ['--no-sandbox'] : [];
+// Harnais de test uniquement : la sandbox SUID d'Electron n'est pas configurée sur les runners CI ni en root.
+const flags = ['--no-sandbox'];
 const app = spawn(electron, [path.join(__dirname, '..'), ...flags, ...inputs], { stdio: 'inherit' });
 
 const isPdf = (f) => fs.existsSync(f) && fs.statSync(f).size > 100 && fs.readFileSync(f).subarray(0, 5).toString() === '%PDF-';
