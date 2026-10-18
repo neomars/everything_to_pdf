@@ -1,7 +1,7 @@
 {
   "name": "everything-to-pdf",
   "productName": "Everything to PDF",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convertit par lot des documents (doc, docx, odt, txt, ...) en PDF par glisser-déposer.",
   "author": "neomars",
   "license": "MIT",
